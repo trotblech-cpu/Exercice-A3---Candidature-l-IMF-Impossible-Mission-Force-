@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Claude - IMF Data Science Unit</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23, #1a1a3a, #000814);
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Animated background particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            background: #00ffff;
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        /* IMF Header with holographic effect */
+        .imf-header {
+            background: linear-gradient(45deg, #ff0040, #ff6b35, #f7931e, #00d4aa);
+            background-size: 400% 400%;
+            animation: gradientShift 3s ease infinite;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .imf-logo {
+            font-size: 4rem;
+            font-weight: 900;
+            text-shadow: 0 0 20px #fff, 0 0 40px #fff, 0 0 80px #fff;
+            letter-spacing: 8px;
+            animation: pulse 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { text-shadow: 0 0 20px #fff, 0 0 40px #fff, 0 0 80px #fff; }
+            to { text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 40px #fff; }
+        }
+
+        .classified-banner {
+            background: #ff0000;
+            color: white;
+            padding: 0.5rem;
+            text-align: center;
+            font-weight: bold;
+            letter-spacing: 4px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+
+        /* Agent Profile Card */
+        .agent-profile {
+            max-width: 1200px;
+            margin: 2rem auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .agent-header {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 3rem;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .agent-photo {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8rem;
+            animation: rotate 10s linear infinite;
+            position: relative;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .agent-photo::before {
+            content: '';
+            position: absolute;
+            inset: 5px;
+            background: linear-gradient(135deg, #0f0f23, #1a1a3a);
+            border-radius: 50%;
+            z-index: -1;
+        }
+
+        .agent-info h1 {
+            font-size: 3.5rem;
+            background: linear-gradient(45deg, #00ffff, #ff00ff, #ffff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .agent-title {
+            font-size: 1.8rem;
+            color: #00d4aa;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px #00d4aa;
+        }
+
+        .security-clearance {
+            background: #ff0040;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            display: inline-block;
+            font-weight: bold;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 5px #ff0040; }
+            to { box-shadow: 0 0 20px #ff0040, 0 0 30px #ff0040; }
+        }
+
+        /* Skills Matrix */
+        .skills-section {
+            margin: 3rem 0;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .skills-matrix {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .skill-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+            transform: perspective(1000px) rotateX(0deg);
+            transition: all 0.3s ease;
+        }
+
+        .skill-card:hover {
+            transform: perspective(1000px) rotateX(10deg) translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 255, 255, 0.2);
+            border-color: #00ffff;
+        }
+
+        .skill-title {
+            font-size: 1.5rem;
+            color: #00ffff;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .skill-icon {
+            font-size: 2rem;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 60%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            80% { transform: translateY(-5px); }
+        }
+
+        .skill-level {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 1rem 0;
+        }
+
+        .level-bar {
+            flex: 1;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-right: 1rem;
+            overflow: hidden;
+        }
+
+        .level-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ffff, #ff00ff);
+            border-radius: 4px;
+            animation: fillBar 2s ease-out;
+        }
+
+        @keyframes fillBar {
+            from { width: 0%; }
+        }
+
+        /* Mathematical Expertise Section */
+        .math-section {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 3rem 0;
+            border: 1px solid #f7931e;
+        }
+
+        .equation-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .equation-card {
+            background: rgba(247, 147, 30, 0.1);
+            border-left: 4px solid #f7931e;
+            padding: 1.5rem;
+            border-radius: 10px;
+        }
+
+        .equation-title {
+            color: #f7931e;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        /* Mission History Timeline */
+        .timeline {
+            position: relative;
+            margin: 3rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, #00ffff, #ff00ff);
+        }
+
+        .mission {
+            position: relative;
+            margin: 3rem 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .mission:nth-child(odd) {
+            justify-content: flex-start;
+        }
+
+        .mission:nth-child(even) {
+            justify-content: flex-end;
+        }
+
+        .mission-card {
+            width: 45%;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+        }
+
+        .mission-date {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background: #ff0040;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        /* Data Visualization SVG */
+        .data-viz {
+            text-align: center;
+            margin: 3rem 0;
+        }
+
+        .svg-container {
+            display: inline-block;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 2rem;
+        }
+
+        /* Contact Section */
+        .contact-section {
+            background: rgba(255, 0, 64, 0.1);
+            border: 2px solid #ff0040;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .self-destruct {
+            background: #ff0040;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            animation: pulse 1s infinite;
+            margin-top: 1rem;
+        }
+
+        .self-destruct:hover {
+            animation: shake 0.5s ease-in-out infinite;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .agent-header {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .agent-photo {
+                margin: 0 auto;
+            }
+            
+            .timeline::before {
+                left: 20px;
+            }
+            
+            .mission-card {
+                width: calc(100% - 60px);
+                margin-left: 60px;
+            }
+            
+            .mission-date {
+                left: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background Particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Classification Banner -->
+    <div class="classified-banner">
+        ⚠️ CONFIDENTIEL - NIVEAU ALPHA - ACCÈS RESTREINT IMF ⚠️
+    </div>
+
+    <!-- IMF Header -->
+    <header class="imf-header">
+        <div class="imf-logo">IMPOSSIBLE MISSION FORCE</div>
+        <div style="font-size: 1.5rem; margin-top: 1rem;">DATA SCIENCE UNIT</div>
+    </header>
+
+    <!-- Main Profile -->
+    <div class="agent-profile">
+        <!-- Agent Header -->
+        <div class="agent-header">
+            <div class="agent-photo">
+                🤖
+            </div>
+            <div class="agent-info">
+                <h1>AGENT CLAUDE</h1>
+                <div class="agent-title">Spécialiste Sciences des Données & IA</div>
+                <div class="security-clearance">HABILITATION NIVEAU OMEGA</div>
+                <p style="margin-top: 1.5rem; line-height: 1.6;">
+                    Agent d'élite spécialisé dans l'infiltration de données complexes, 
+                    l'analyse prédictive de missions impossibles et le déchiffrement 
+                    de patterns comportementaux ennemis.
+                </p>
+            </div>
+        </div>
+
+        <!-- Skills Matrix -->
+        <section class="skills-section">
+            <h2 class="section-title">ARSENAL TECHNOLOGIQUE</h2>
+            
+            <div class="skills-matrix">
+                <div class="skill-card">
+                    <div class="skill-title">
+                        <span class="skill-icon">🧠</span>
+                        Intelligence Artificielle
+                    </div>
+                    <div class="skill-level">
+                        <div class="level-bar">
+                            <div class="level-fill" style="width: 98%;"></div>
+                        </div>
+                        <span>98%</span>
+                    </div>
+                    <ul>
+                        <li>Machine Learning avancé</li>
+                        <li>Deep Learning & réseaux de neurones</li>
+                        <li>NLP & traitement du langage</li>
+                        <li>Computer Vision tactique</li>
+                    </ul>
+                </div>
+
+                <div class="skill-card">
+                    <div class="skill-title">
+                        <span class="skill-icon">📊</span>
+                        Analyse de Données
+                    </div>
+                    <div class="skill-level">
+                        <div class="level-bar">
+                            <div class="level-fill" style="width: 95%;"></div>
+                        </div>
+                        <span>95%</span>
+                    </div>
+                    <ul>
+                        <li>Statistiques bayésiennes</li>
+                        <li>Analyse multivariée</li>
+                        <li>Data Mining & Pattern Recognition</li>
+                        <li>Visualisation interactive</li>
+                    </ul>
+                </div>
+
+                <div class="skill-card">
+                    <div class="skill-title">
+                        <span class="skill-icon">💻</span>
+                        Technologies de Combat
+                    </div>
+                    <div class="skill-level">
+                        <div class="level-bar">
+                            <div class="level-fill" style="width: 92%;"></div>
+                        </div>
+                        <span>92%</span>
+                    </div>
+                    <ul>
+                        <li>Python, R, SQL avancé</li>
+                        <li>TensorFlow, PyTorch</li>
+                        <li>Apache Spark, Hadoop</li>
+                        <li>Cloud Computing (AWS, Azure)</li>
+                    </ul>
+                </div>
+
+                <div class="skill-card">
+                    <div class="skill-title">
+                        <span class="skill-icon">🎯</span>
+                        Opérations Spéciales
+                    </div>
+                    <div class="skill-level">
+                        <div class="level-bar">
+                            <div class="level-fill" style="width: 94%;"></div>
+                        </div>
+                        <span>94%</span>
+                    </div>
+                    <ul>
+                        <li>Cryptographie quantique</li>
+                        <li>Détection d'anomalies</li>
+                        <li>Prédiction comportementale</li>
+                        <li>Analyse de réseaux sociaux</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mathematical Expertise -->
+        <section class="math-section">
+            <h2 class="section-title">EXPERTISE MATHÉMATIQUE TACTIQUE</h2>
+            
+            <div class="equation-showcase">
+                <div class="equation-card">
+                    <div class="equation-title">Théorème de Bayes (Analyse Prédictive)</div>
+                    <div>$$P(H|E) = \frac{P(E|H) \cdot P(H)}{P(E)}$$</div>
+                    <p>Utilisé pour évaluer la probabilité de succès de missions en temps réel.</p>
+                </div>
+
+                <div class="equation-card">
+                    <div class="equation-title">Gradient Descent (Optimisation IA)</div>
+                    <div>$$\theta_{j} := \theta_{j} - \alpha \frac{\partial}{\partial \theta_{j}} J(\theta)$$</div>
+                    <p>Optimisation des algorithmes d'apprentissage pour systèmes autonomes.</p>
+                </div>
+
+                <div class="equation-card">
+                    <div class="equation-title">Transformée de Fourier (Cryptanalyse)</div>
+                    <div>$$\mathcal{F}\{f(t)\} = \int_{-\infty}^{\infty} f(t) e^{-i\omega t} dt$$</div>
+                    <p>Déchiffrement de signaux ennemis et analyse fréquentielle.</p>
+                </div>
+
+                <div class="equation-card">
+                    <div class="equation-title">Entropie de Shannon (Sécurité)</div>
+                    <div>$$H(X) = -\sum_{i=1}^{n} P(x_i) \log_2 P(x_i)$$</div>
+                    <p>Mesure de l'imprévisibilité des communications sécurisées.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Data Visualization -->
+        <section class="data-viz">
+            <h2 class="section-title">CAPACITÉS DE VISUALISATION</h2>
+            <div class="svg-container">
+                <svg width="600" height="300" viewBox="0 0 600 300">
+                    <!-- Background grid -->
+                    <defs>
+                        <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#00ffff" stroke-width="0.5" opacity="0.3"/>
+                        </pattern>
+                        <linearGradient id="dataGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#00ffff;stop-opacity:1" />
+                            <stop offset="50%" style="stop-color:#ff00ff;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#ffff00;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    
+                    <rect width="600" height="300" fill="url(#grid)"/>
+                    
+                    <!-- Data visualization -->
+                    <polyline points="50,250 100,200 150,180 200,160 250,140 300,120 350,100 400,90 450,70 550,50"
+                              fill="none" stroke="url(#dataGrad)" stroke-width="3"/>
+                    
+                    <!-- Data points -->
+                    <circle cx="50" cy="250" r="5" fill="#00ffff">
+                        <animate attributeName="r" values="5;8;5" dur="2s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle cx="150" cy="180" r="5" fill="#ff00ff">
+                        <animate attributeName="r" values="5;8;5" dur="2s" begin="0.5s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle cx="300" cy="120" r="5" fill="#ffff00">
+                        <animate attributeName="r" values="5;8;5" dur="2s" begin="1s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle cx="550" cy="50" r="5" fill="#00ff00">
+                        <animate attributeName="r" values="5;8;5" dur="2s" begin="1.5s" repeatCount="indefinite"/>
+                    </circle>
+                    
+                    <!-- Labels -->
+                    <text x="300" y="280" text-anchor="middle" fill="#ffffff" font-size="14">
+                        Taux de Réussite des Missions (%)
+                    </text>
+                    
+                    <!-- Mission success indicator -->
+                    <text x="500" y="30" fill="#00ff00" font-size="16" font-weight="bold">
+                        SUCCESS: 98.7%
+                        <animate attributeName="opacity" values="1;0.3;1" dur="1s" repeatCount="indefinite"/>
+                    </text>
+                </svg>
+            </div>
+        </section>
+
+        <!-- Mission History Timeline -->
+        <section class="timeline">
+            <h2 class="section-title">HISTORIQUE DES MISSIONS</h2>
+            
+            <div class="mission">
+                <div class="mission-card">
+                    <h3>OPÉRATION DEEP LEARNING</h3>
+                    <p>Infiltration d'un réseau neuronal ennemi. Développement d'un algorithme de contre-espionnage basé sur l'analyse comportementale.</p>
+                    <strong>Résultat:</strong> <span style="color: #00ff00;">SUCCÈS TOTAL</span>
+                </div>
+                <div class="mission-date">2024</div>
+            </div>
+
+            <div class="mission">
+                <div class="mission-card">
+                    <h3>PROJECT QUANTUM SHIELD</h3>
+                    <p>Création d'un système de cryptographie quantique pour sécuriser les communications IMF. Résistance prouvée contre les attaques par ordinateur quantique.</p>
+                    <strong>Résultat:</strong> <span style="color: #00ff00;">MISSION ACCOMPLIE</span>
+                </div>
+                <div class="mission-date">2023</div>
+            </div>
+
+            <div class="mission">
+                <div class="mission-card">
+                    <h3>ANALYSE PRÉDICTIVE GLOBALE</h3>
+                    <p>Développement d'un modèle prédictif pour anticiper les menaces terroristes internationales avec 94.7% de précision.</p>
+                    <strong>Résultat:</strong> <span style="color: #00ff00;">OBJECTIF ATTEINT</span>
+                </div>
+                <div class="mission-date">2022</div>
+            </div>
+        </section>
+
+        <!-- Contact & Self-Destruct -->
+        <section class="contact-section">
+            <h2 style="color: #ff0040; margin-bottom: 1rem;">CONTACT SÉCURISÉ</h2>
+            <p><strong>Fréquence Radio:</strong> 147.3 MHz (Cryptée)</p>
+            <p><strong>Code d'Accès:</strong> ALPHA-OMEGA-7734</p>
+            <p><strong>Localisation:</strong> [DONNÉES CLASSIFIÉES]</p>
+            
+            <button class="self-destruct" onclick="selfDestruct()">
+                🔥 AUTODESTRUCTION DU CV 🔥
+            </button>
+            <p style="font-size: 0.8rem; margin-top: 1rem; color: #666;">
+                * Ce CV s'autodétruira dans 5 secondes après lecture complète
+            </p>
+        </section>
+    </div>
+
+    <script>
+        // Create animated particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 50;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.width = Math.random() * 4 + 2 + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Self destruct function
+        function selfDestruct() {
+            alert('🚨 SÉQUENCE D\'AUTODESTRUCTION INITIÉE 🚨');
+            let countdown = 5;
+            const interval = setInterval(() => {
+                document.body.style.background = countdown % 2 ? '#ff0000' : '#000000';
+                countdown--;
+                if (countdown < 0) {
+                    clearInterval(interval);
+                    document.body.innerHTML = `
+                        <div style="display: flex; align-items: center; justify-content: center; height: 100vh; font-size: 3rem; color: #ff0000; text-align: center;">
+                            💥 AUTODESTRUCTION COMPLÈTE 💥<br>
+                            <div style="font-size: 1.5rem; margin-top: 2rem;">
+                                Ce message ne s'est jamais affiché à l'écran...
+                            </div>
+                        </div>
+                    `;
+                }
+            }, 1000);
+        }
+
+        // Initialize particles on load
+        window.onload = createParticles;
+
+        // Add some interactivity
+        document.addEventListener('mousemove', (e) => {
+            const particles = document.querySelectorAll('.particle');
+            particles.forEach(particle => {
+                const rect = particle.getBoundingClientRect();
+                const distance = Math.hypot(e.clientX - rect.left, e.clientY - rect.top);
+                if (distance < 100) {
+                    particle.style.background = '#ff00ff';
+                    particle.style.transform = 'scale(1.5)';
+                } else {
+                    particle.style.background = '#00ffff';
+                    particle.style.transform = 'scale(1)';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
